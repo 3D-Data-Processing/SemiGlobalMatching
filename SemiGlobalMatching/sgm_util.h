@@ -4,115 +4,141 @@
 * Describe	: implement of sgm_util
 */
 
-#pragma once
+// #pragma once
+#ifndef _SGM_UTIL_H
+#define _SGM_UTIL_H
 #include "sgm_types.h"
+#include <iostream>
 
-#ifndef SAFE_DELETE
-#define SAFE_DELETE(P) {if(P) delete[](P);(P)=nullptr;}
-#endif
+// #ifndef SAFE_DELETE
+// #define SAFE_DELETE(P)   \
+// 	{                    \
+// 		if (P)           \
+// 			T = std::remove_pointer_t<decltype(P)>; \
+// 			std::cout<< T << std::endl; \
+//             if (std::is_array<T>::value) { \
+//             delete[] P;                     \
+//         } else {                            \
+//             delete P;                       \
+//         }                                   \
+//         (P) = nullptr;                      \
+// 	}
+// #endif
+
+template <typename T>
+void SAFE_DELETE(T*& ptr) {
+    if (ptr != nullptr) {
+        if (std::is_array<T>::value) {
+            delete[] ptr;
+        } else {
+            delete ptr;
+        }
+        ptr = nullptr;
+    }
+}
 
 namespace sgm_util
 {
-	//¡¤¡¤¡¤¡¤¡¤¡¤ census¹¤¾ß¼¯
-	// census±ä»»
+	//Â·Â·Â·Â·Â·Â· censuså·¥å…·é›†
+	// censuså˜æ¢
 
 	/**
-	 * \brief census±ä»»
-	 * \param source	ÊäÈë£¬Ó°ÏñÊı¾İ
-	 * \param census	Êä³ö£¬censusÖµÊı×é
-	 * \param width		ÊäÈë£¬Ó°Ïñ¿í
-	 * \param height	ÊäÈë£¬Ó°Ïñ¸ß
+	 * \brief censuså˜æ¢
+	 * \param source	è¾“å…¥ï¼Œå½±åƒæ•°æ®
+	 * \param census	è¾“å‡ºï¼Œcensuså€¼æ•°ç»„
+	 * \param width		è¾“å…¥ï¼Œå½±åƒå®½
+	 * \param height	è¾“å…¥ï¼Œå½±åƒé«˜
 	 */
-	void census_transform_5x5(const uint8* source, uint32* census, const sint32& width, const sint32& height);
-	void census_transform_9x7(const uint8* source, uint64* census, const sint32& width, const sint32& height);
-	// Hamming¾àÀë
-	uint8 Hamming32(const uint32& x, const uint32& y);
-	uint8 Hamming64(const uint64& x, const uint64& y);
+	void census_transform_5x5(const uint8 *source, uint32 *census, const sint32 &width, const sint32 &height);
+	void census_transform_9x7(const uint8 *source, uint64 *census, const sint32 &width, const sint32 &height);
+	// Hammingè·ç¦»
+	uint8 Hamming32(const uint32 &x, const uint32 &y);
+	uint8 Hamming64(const uint64 &x, const uint64 &y);
 
 	/**
-	 * \brief ×óÓÒÂ·¾¶¾ÛºÏ ¡ú ¡û
-	 * \param img_data			ÊäÈë£¬Ó°ÏñÊı¾İ
-	 * \param width				ÊäÈë£¬Ó°Ïñ¿í
-	 * \param height			ÊäÈë£¬Ó°Ïñ¸ß
-	 * \param min_disparity		ÊäÈë£¬×îĞ¡ÊÓ²î
-	 * \param max_disparity		ÊäÈë£¬×î´óÊÓ²î
-	 * \param p1				ÊäÈë£¬³Í·£ÏîP1
-	 * \param p2_init			ÊäÈë£¬³Í·£ÏîP2_Init
-	 * \param cost_init			ÊäÈë£¬³õÊ¼´ú¼ÛÊı¾İ
-	 * \param cost_aggr			Êä³ö£¬Â·¾¶¾ÛºÏ´ú¼ÛÊı¾İ
-	 * \param is_forward		ÊäÈë£¬ÊÇ·ñÎªÕı·½Ïò£¨Õı·½ÏòÎª´Ó×óµ½ÓÒ£¬·´·½ÏòÎª´ÓÓÒµ½×ó£©
+	 * \brief å·¦å³è·¯å¾„èšåˆ â†’ â†
+	 * \param img_data			è¾“å…¥ï¼Œå½±åƒæ•°æ®
+	 * \param width				è¾“å…¥ï¼Œå½±åƒå®½
+	 * \param height			è¾“å…¥ï¼Œå½±åƒé«˜
+	 * \param min_disparity		è¾“å…¥ï¼Œæœ€å°è§†å·®
+	 * \param max_disparity		è¾“å…¥ï¼Œæœ€å¤§è§†å·®
+	 * \param p1				è¾“å…¥ï¼Œæƒ©ç½šé¡¹P1
+	 * \param p2_init			è¾“å…¥ï¼Œæƒ©ç½šé¡¹P2_Init
+	 * \param cost_init			è¾“å…¥ï¼Œåˆå§‹ä»£ä»·æ•°æ®
+	 * \param cost_aggr			è¾“å‡ºï¼Œè·¯å¾„èšåˆä»£ä»·æ•°æ®
+	 * \param is_forward		è¾“å…¥ï¼Œæ˜¯å¦ä¸ºæ­£æ–¹å‘ï¼ˆæ­£æ–¹å‘ä¸ºä»å·¦åˆ°å³ï¼Œåæ–¹å‘ä¸ºä»å³åˆ°å·¦ï¼‰
 	 */
-	void CostAggregateLeftRight(const uint8* img_data, const sint32& width, const sint32& height, const sint32& min_disparity, const sint32& max_disparity,
-		const sint32& p1,const sint32& p2_init, const uint8* cost_init, uint8* cost_aggr, bool is_forward = true);
+	void CostAggregateLeftRight(const uint8 *img_data, const sint32 &width, const sint32 &height, const sint32 &min_disparity, const sint32 &max_disparity,
+								const sint32 &p1, const sint32 &p2_init, const uint8 *cost_init, uint8 *cost_aggr, bool is_forward = true);
 
 	/**
-	 * \brief ÉÏÏÂÂ·¾¶¾ÛºÏ ¡ı ¡ü
-	 * \param img_data			ÊäÈë£¬Ó°ÏñÊı¾İ
-	 * \param width				ÊäÈë£¬Ó°Ïñ¿í
-	 * \param height			ÊäÈë£¬Ó°Ïñ¸ß
-	 * \param min_disparity		ÊäÈë£¬×îĞ¡ÊÓ²î
-	 * \param max_disparity		ÊäÈë£¬×î´óÊÓ²î
-	 * \param p1				ÊäÈë£¬³Í·£ÏîP1
-	 * \param p2_init			ÊäÈë£¬³Í·£ÏîP2_Init
-	 * \param cost_init			ÊäÈë£¬³õÊ¼´ú¼ÛÊı¾İ
-	 * \param cost_aggr			Êä³ö£¬Â·¾¶¾ÛºÏ´ú¼ÛÊı¾İ
-	 * \param is_forward		ÊäÈë£¬ÊÇ·ñÎªÕı·½Ïò£¨Õı·½ÏòÎª´ÓÉÏµ½ÏÂ£¬·´·½ÏòÎª´ÓÏÂµ½ÉÏ£©
+	 * \brief ä¸Šä¸‹è·¯å¾„èšåˆ â†“ â†‘
+	 * \param img_data			è¾“å…¥ï¼Œå½±åƒæ•°æ®
+	 * \param width				è¾“å…¥ï¼Œå½±åƒå®½
+	 * \param height			è¾“å…¥ï¼Œå½±åƒé«˜
+	 * \param min_disparity		è¾“å…¥ï¼Œæœ€å°è§†å·®
+	 * \param max_disparity		è¾“å…¥ï¼Œæœ€å¤§è§†å·®
+	 * \param p1				è¾“å…¥ï¼Œæƒ©ç½šé¡¹P1
+	 * \param p2_init			è¾“å…¥ï¼Œæƒ©ç½šé¡¹P2_Init
+	 * \param cost_init			è¾“å…¥ï¼Œåˆå§‹ä»£ä»·æ•°æ®
+	 * \param cost_aggr			è¾“å‡ºï¼Œè·¯å¾„èšåˆä»£ä»·æ•°æ®
+	 * \param is_forward		è¾“å…¥ï¼Œæ˜¯å¦ä¸ºæ­£æ–¹å‘ï¼ˆæ­£æ–¹å‘ä¸ºä»ä¸Šåˆ°ä¸‹ï¼Œåæ–¹å‘ä¸ºä»ä¸‹åˆ°ä¸Šï¼‰
 	 */
-	void CostAggregateUpDown(const uint8* img_data, const sint32& width, const sint32& height, const sint32& min_disparity, const sint32& max_disparity,
-		const sint32& p1, const sint32& p2_init, const uint8* cost_init, uint8* cost_aggr, bool is_forward = true);
+	void CostAggregateUpDown(const uint8 *img_data, const sint32 &width, const sint32 &height, const sint32 &min_disparity, const sint32 &max_disparity,
+							 const sint32 &p1, const sint32 &p2_init, const uint8 *cost_init, uint8 *cost_aggr, bool is_forward = true);
 
 	/**
-	 * \brief ¶Ô½ÇÏß1Â·¾¶¾ÛºÏ£¨×óÉÏ<->ÓÒÏÂ£©¨K ¨I
-	 * \param img_data			ÊäÈë£¬Ó°ÏñÊı¾İ
-	 * \param width				ÊäÈë£¬Ó°Ïñ¿í
-	 * \param height			ÊäÈë£¬Ó°Ïñ¸ß
-	 * \param min_disparity		ÊäÈë£¬×îĞ¡ÊÓ²î
-	 * \param max_disparity		ÊäÈë£¬×î´óÊÓ²î
-	 * \param p1				ÊäÈë£¬³Í·£ÏîP1
-	 * \param p2_init			ÊäÈë£¬³Í·£ÏîP2_Init
-	 * \param cost_init			ÊäÈë£¬³õÊ¼´ú¼ÛÊı¾İ
-	 * \param cost_aggr			Êä³ö£¬Â·¾¶¾ÛºÏ´ú¼ÛÊı¾İ
-	 * \param is_forward		ÊäÈë£¬ÊÇ·ñÎªÕı·½Ïò£¨Õı·½ÏòÎª´Ó×óÉÏµ½ÓÒÏÂ£¬·´·½ÏòÎª´ÓÓÒÏÂµ½×óÉÏ£©
+	 * \brief å¯¹è§’çº¿1è·¯å¾„èšåˆï¼ˆå·¦ä¸Š<->å³ä¸‹ï¼‰â†˜ â†–
+	 * \param img_data			è¾“å…¥ï¼Œå½±åƒæ•°æ®
+	 * \param width				è¾“å…¥ï¼Œå½±åƒå®½
+	 * \param height			è¾“å…¥ï¼Œå½±åƒé«˜
+	 * \param min_disparity		è¾“å…¥ï¼Œæœ€å°è§†å·®
+	 * \param max_disparity		è¾“å…¥ï¼Œæœ€å¤§è§†å·®
+	 * \param p1				è¾“å…¥ï¼Œæƒ©ç½šé¡¹P1
+	 * \param p2_init			è¾“å…¥ï¼Œæƒ©ç½šé¡¹P2_Init
+	 * \param cost_init			è¾“å…¥ï¼Œåˆå§‹ä»£ä»·æ•°æ®
+	 * \param cost_aggr			è¾“å‡ºï¼Œè·¯å¾„èšåˆä»£ä»·æ•°æ®
+	 * \param is_forward		è¾“å…¥ï¼Œæ˜¯å¦ä¸ºæ­£æ–¹å‘ï¼ˆæ­£æ–¹å‘ä¸ºä»å·¦ä¸Šåˆ°å³ä¸‹ï¼Œåæ–¹å‘ä¸ºä»å³ä¸‹åˆ°å·¦ä¸Šï¼‰
 	 */
-	void CostAggregateDagonal_1(const uint8* img_data, const sint32& width, const sint32& height, const sint32& min_disparity, const sint32& max_disparity,
-		const sint32& p1, const sint32& p2_init, const uint8* cost_init, uint8* cost_aggr, bool is_forward = true);
+	void CostAggregateDagonal_1(const uint8 *img_data, const sint32 &width, const sint32 &height, const sint32 &min_disparity, const sint32 &max_disparity,
+								const sint32 &p1, const sint32 &p2_init, const uint8 *cost_init, uint8 *cost_aggr, bool is_forward = true);
 
 	/**
-	 * \brief ¶Ô½ÇÏß2Â·¾¶¾ÛºÏ£¨ÓÒÉÏ<->×óÏÂ£©¨L ¨J
-	 * \param img_data			ÊäÈë£¬Ó°ÏñÊı¾İ
-	 * \param width				ÊäÈë£¬Ó°Ïñ¿í
-	 * \param height			ÊäÈë£¬Ó°Ïñ¸ß
-	 * \param min_disparity		ÊäÈë£¬×îĞ¡ÊÓ²î
-	 * \param max_disparity		ÊäÈë£¬×î´óÊÓ²î
-	 * \param p1				ÊäÈë£¬³Í·£ÏîP1
-	 * \param p2_init			ÊäÈë£¬³Í·£ÏîP2_Init
-	 * \param cost_init			ÊäÈë£¬³õÊ¼´ú¼ÛÊı¾İ
-	 * \param cost_aggr			Êä³ö£¬Â·¾¶¾ÛºÏ´ú¼ÛÊı¾İ
-	 * \param is_forward		ÊäÈë£¬ÊÇ·ñÎªÕı·½Ïò£¨Õı·½ÏòÎª´ÓÉÏµ½ÏÂ£¬·´·½ÏòÎª´ÓÏÂµ½ÉÏ£©
+	 * \brief å¯¹è§’çº¿2è·¯å¾„èšåˆï¼ˆå³ä¸Š<->å·¦ä¸‹ï¼‰â†™ â†—
+	 * \param img_data			è¾“å…¥ï¼Œå½±åƒæ•°æ®
+	 * \param width				è¾“å…¥ï¼Œå½±åƒå®½
+	 * \param height			è¾“å…¥ï¼Œå½±åƒé«˜
+	 * \param min_disparity		è¾“å…¥ï¼Œæœ€å°è§†å·®
+	 * \param max_disparity		è¾“å…¥ï¼Œæœ€å¤§è§†å·®
+	 * \param p1				è¾“å…¥ï¼Œæƒ©ç½šé¡¹P1
+	 * \param p2_init			è¾“å…¥ï¼Œæƒ©ç½šé¡¹P2_Init
+	 * \param cost_init			è¾“å…¥ï¼Œåˆå§‹ä»£ä»·æ•°æ®
+	 * \param cost_aggr			è¾“å‡ºï¼Œè·¯å¾„èšåˆä»£ä»·æ•°æ®
+	 * \param is_forward		è¾“å…¥ï¼Œæ˜¯å¦ä¸ºæ­£æ–¹å‘ï¼ˆæ­£æ–¹å‘ä¸ºä»ä¸Šåˆ°ä¸‹ï¼Œåæ–¹å‘ä¸ºä»ä¸‹åˆ°ä¸Šï¼‰
 	 */
-	void CostAggregateDagonal_2(const uint8* img_data, const sint32& width, const sint32& height, const sint32& min_disparity, const sint32& max_disparity,
-		const sint32& p1, const sint32& p2_init, const uint8* cost_init, uint8* cost_aggr, bool is_forward = true);
-
-	
-	/**
-	 * \brief ÖĞÖµÂË²¨
-	 * \param in				ÊäÈë£¬Ô´Êı¾İ 
-	 * \param out				Êä³ö£¬Ä¿±êÊı¾İ
-	 * \param width				ÊäÈë£¬¿í¶È
-	 * \param height			ÊäÈë£¬¸ß¶È
-	 * \param wnd_size			ÊäÈë£¬´°¿Ú¿í¶È
-	 */
-	void MedianFilter(const float32* in, float32* out, const sint32& width, const sint32& height, const sint32 wnd_size);
-
+	void CostAggregateDagonal_2(const uint8 *img_data, const sint32 &width, const sint32 &height, const sint32 &min_disparity, const sint32 &max_disparity,
+								const sint32 &p1, const sint32 &p2_init, const uint8 *cost_init, uint8 *cost_aggr, bool is_forward = true);
 
 	/**
-	 * \brief ÌŞ³ıĞ¡Á¬Í¨Çø
-	 * \param disparity_map		ÊäÈë£¬ÊÓ²îÍ¼ 
-	 * \param width				ÊäÈë£¬¿í¶È
-	 * \param height			ÊäÈë£¬¸ß¶È
-	 * \param diff_insame		ÊäÈë£¬Í¬Ò»Á¬Í¨ÇøÄÚµÄ¾Ö²¿ÏñËØ²îÒì
-	 * \param min_speckle_aera	ÊäÈë£¬×îĞ¡Á¬Í¨ÇøÃæ»ı
-	 * \param invalid_val		ÊäÈë£¬ÎŞĞ§Öµ
+	 * \brief ä¸­å€¼æ»¤æ³¢
+	 * \param in				è¾“å…¥ï¼Œæºæ•°æ® 
+	 * \param out				è¾“å‡ºï¼Œç›®æ ‡æ•°æ®
+	 * \param width				è¾“å…¥ï¼Œå®½åº¦
+	 * \param height			è¾“å…¥ï¼Œé«˜åº¦
+	 * \param wnd_size			è¾“å…¥ï¼Œçª—å£å®½åº¦
 	 */
-	void RemoveSpeckles(float32* disparity_map, const sint32& width, const sint32& height, const sint32& diff_insame,const uint32& min_speckle_aera, const float32& invalid_val);
+	void MedianFilter(const float32 *in, float32 *out, const sint32 &width, const sint32 &height, const sint32 wnd_size);
+
+	/**
+	 * \brief å‰”é™¤å°è¿é€šåŒº
+	 * \param disparity_map		è¾“å…¥ï¼Œè§†å·®å›¾ 
+	 * \param width				è¾“å…¥ï¼Œå®½åº¦
+	 * \param height			è¾“å…¥ï¼Œé«˜åº¦
+	 * \param diff_insame		è¾“å…¥ï¼ŒåŒä¸€è¿é€šåŒºå†…çš„å±€éƒ¨åƒç´ å·®å¼‚
+	 * \param min_speckle_aera	è¾“å…¥ï¼Œæœ€å°è¿é€šåŒºé¢ç§¯
+	 * \param invalid_val		è¾“å…¥ï¼Œæ— æ•ˆå€¼
+	 */
+	void RemoveSpeckles(float32 *disparity_map, const sint32 &width, const sint32 &height, const sint32 &diff_insame, const uint32 &min_speckle_aera, const float32 &invalid_val);
 }
+
+#endif
